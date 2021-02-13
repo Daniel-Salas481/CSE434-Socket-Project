@@ -1,6 +1,7 @@
 from socket import *
 from consolemenu import *
 from consolemenu.items import *
+import re
 
 serverName = '127.0.0.1'
 
@@ -9,22 +10,50 @@ clientSocket = socket(AF_INET, SOCK_DGRAM)
 # Create the menu
 menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_option=False)
 
+
+
+
+
+
 # Create some items
 def op_register():
     #register <contact-name> <IP-address> <port>.
-    register = input("register ")
-    clientSocket.sendto(register.encode(),(serverName, serverPort))
-    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    validIP = False
+    
+    # Regex expression for validating IPv4
+    regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
+            "2[0-4][0-9]|25[0-5])\\.){3}"\
+            "([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
+            "2[0-4][0-9]|25[0-5])"
 
-    print(messageCom.decode())
-    register = input("..")
+    p = re.compile(regex)
+
+    nameReg, ipReg, portReg = input("register ").rsplit(None, 2)
+
+    
+    if nameReg.isalpha() and re.search(p, ipReg) and portReg.isdigit():
+     clientSocket.sendto("0".encode(),(serverName, serverPort)) #letting the server know it is a register function
+     clientSocket.sendto(nameReg.encode(),(serverName, serverPort))
+     clientSocket.sendto(ipReg.encode(),(serverName, serverPort))
+     clientSocket.sendto(portReg.encode(),(serverName, serverPort))
+     messageCom, serverAddress = clientSocket.recvfrom(2048)
+     print(messageCom.decode())
+     exit()
+    else:
+     print('Invalid input. Please try again.')
+      #register = input("..")
     exit()
+    
+   
+def op_create():
+
+    ContactListin = input("create ")
 
     
 
 IMregister = FunctionItem("register", op_register)
 
-IMcreate = FunctionItem("create", input, ["Enter an input"])
+IMcreate = FunctionItem("create", op_create)
 
 IMquery = CommandItem("query-lists",  "echo hello")
 
