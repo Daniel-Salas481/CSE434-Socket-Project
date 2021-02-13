@@ -48,6 +48,13 @@ def op_register():
 def op_create():
 
     ContactListin = input("create ")
+    
+    clientSocket.sendto("1".encode(), (serverName, serverPort))
+    clientSocket.sendto(ContactListin.encode(), (serverName, serverPort))
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCom.decode())
+    exit()
+
 
     
 
