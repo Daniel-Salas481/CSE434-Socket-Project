@@ -9,9 +9,9 @@ print("[RUNNING]")
 
 
 class ContactList:
-    def __init__(self, _name):
-        self.name = _name
-        self.contact = []
+    def __init__(self, _name):  #join asu daniel 
+        self.name = _name       #does "asu" exist? 
+        self.contact = []       # does daniel exist in "asu"
     def addContact(self, contact):
         self.contact.append(contact)
 
@@ -22,18 +22,55 @@ class Contactinfo:
         self.portNum = portNum
 
 
-p = []
+p = [] 
 contactName = []
 
 def se_join():
     conList, clientAddress = serverSocket.recvfrom(2048)
     nameList, clientAddress = serverSocket.recvfrom(2048)
 
-    for obj in contactName:
-        if obj.name == nameList:
+
+    decodeC = conList.decode()
+    decodeN = nameList.decode()
+
+    nameValid = False
+    contactValid = False
+    regValid = False
+    inList = False
+    for i,j in enumerate(contactName):
+        if j.name == decodeC:
+            contactValid = True
+            print("Contact: " + j.name + " found")
+            for u in j.contact:
+                if u.name == decodeN:
+                    inList = True
+                    print("already exist")
+            
+            if inList == False:
+                for y in p:
+                    if y.name == decodeN:
+                        print("Name: " + y.name + " " +
+                        "Ip Address: " + y.ipAdd + " " +
+                        "Port Number: " + str(y.portNum) + "\n")
+                        theInfo = Contactinfo(y.name, y.ipAdd, y.portNum)
+                        contactName[i].addContact(theInfo)
+                        nameValid = True
+            #ContactLists[0].addContact(theInfo)
+    if nameValid == True and contactValid == True:
+        print("Added to contact succesfully")
+        isValid = "SUCCESS"
+        serverSocket.sendto(isValid.encode(), clientAddress)
+    else:
+        print("An error has occurred")
+        isValid = "FAILURE"
+        serverSocket.sendto(isValid.encode(), clientAddress)
+  
+
+
+
     
-    decodeConList = conList.decode()
-    decodeNameList = nameList.decode()
+    #decodeConList = conList.decode()
+    #decodeNameList = nameList.decode()
 
 
 #most likely will work on this more after I start working on the add function

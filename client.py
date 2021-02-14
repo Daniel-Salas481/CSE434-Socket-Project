@@ -19,6 +19,10 @@ def op_join():
     clientSocket.sendto(joinConList.encode(),(serverName, serverPort))
     clientSocket.sendto(joinConName.encode(),(serverName, serverPort))
 
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCom.decode())
+    exit()
+
 def op_register():
     #register <contact-name> <IP-address> <port>.
     validIP = False
@@ -75,7 +79,7 @@ IMcreate = FunctionItem("create", op_create)
 
 IMquery = FunctionItem("query-lists",  op_query)
 
-IMjoin = FunctionItem("join", input, ["Enter an input"])
+IMjoin = FunctionItem("join", op_join)
 
 IMsave = FunctionItem("save", input, ["Enter an input"])
 
