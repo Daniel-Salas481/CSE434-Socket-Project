@@ -12,6 +12,13 @@ menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_opt
 
 
 # Create some items
+def op_join():
+    joinConList, joinConName = input("join ").rsplit(None, 1)
+
+    clientSocket.sendto("3".encode(), (serverName, serverPort))
+    clientSocket.sendto(joinConList.encode(),(serverName, serverPort))
+    clientSocket.sendto(joinConName.encode(),(serverName, serverPort))
+
 def op_register():
     #register <contact-name> <IP-address> <port>.
     validIP = False
@@ -54,8 +61,6 @@ def op_create():
 def op_query():
     clientSocket.sendto("2".encode(), (serverName, serverPort))
     messageCom, serverAddress = clientSocket.recvfrom(2048)
-    messageCon, serverAddress = clientSocket.recvfrom(2048)
-    print(messageCon.decode())
     print(messageCom.decode())
     cContact = input("..")
     exit()
