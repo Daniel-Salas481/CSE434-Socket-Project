@@ -22,6 +22,28 @@ class Contactinfo:
 p = []
 contactName = []
 
+
+#most likely will work on this more after I start working on the add function
+def se_query():
+    if not contactName:
+        print(f'No contact is found')
+        noContactMsg = "No contact has been created"
+        noContact = str(0)
+        serverSocket.sendto(noContact.encode(), clientAddress)
+        serverSocket.sendto(noContactMsg.encode(), clientAddress)
+    
+    else:
+        numOfContact = str(len(contactName))
+        str1 = " "
+        stringContact = str1.join(contactName)
+        serverSocket.sendto(numOfContact.encode(), clientAddress)
+        serverSocket.sendto(stringContact.encode(),clientAddress)
+        
+
+
+        
+    
+
 def se_create():
     ContactListin, clientAddress = serverSocket.recvfrom(2048)
     
@@ -110,6 +132,8 @@ while True:
         se_register()
     elif(command == "1"):
         se_create()
+    elif(command == "2"):
+        se_query()
     else:
         print("command error")
    

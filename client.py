@@ -11,10 +11,6 @@ clientSocket = socket(AF_INET, SOCK_DGRAM)
 menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_option=False)
 
 
-
-
-
-
 # Create some items
 def op_register():
     #register <contact-name> <IP-address> <port>.
@@ -55,6 +51,16 @@ def op_create():
     print(messageCom.decode())
     exit()
 
+def op_query():
+    clientSocket.sendto("2".encode(), (serverName, serverPort))
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    messageCon, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCon.decode())
+    print(messageCom.decode())
+    cContact = input("..")
+    exit()
+
+
 
     
 
@@ -62,7 +68,7 @@ IMregister = FunctionItem("register", op_register)
 
 IMcreate = FunctionItem("create", op_create)
 
-IMquery = CommandItem("query-lists",  "echo hello")
+IMquery = FunctionItem("query-lists",  op_query)
 
 IMjoin = FunctionItem("join", input, ["Enter an input"])
 
