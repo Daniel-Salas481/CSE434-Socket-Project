@@ -13,6 +13,19 @@ menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_opt
 
 # Create some items
 
+
+
+def op_exit():
+    exitIn = input("exit ")
+
+    clientSocket.sendto("5".encode(), (serverName, serverPort))
+    clientSocket.sendto(exitIn.encode(), (serverName, serverPort))
+
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCom.decode())
+    exit()
+
+
 def op_save():
     saveIn = input("save ")
 
@@ -96,7 +109,7 @@ IMjoin = FunctionItem("join", op_join)
 
 IMsave = FunctionItem("save", op_save)
 
-IMexit = FunctionItem("exit", input, ["Enter an input"])
+IMexit = FunctionItem("exit", op_exit)
 
 # Once we're done creating them, we just add the items to the menu
 menu.append_item(IMregister)

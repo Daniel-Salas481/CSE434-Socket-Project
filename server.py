@@ -24,6 +24,39 @@ class Contactinfo:
 
 p = [] 
 contactName = []
+def se_exit():
+    exName, clientAddress = serverSocket.recvfrom(2048)
+
+    decodeExit = exName.decode()
+
+    nonContact = False
+    inContact = False
+
+    for i,j in enumerate(p):
+        if j.name == decodeExit:
+            print(f"found {j.name} outside of contact list...")
+            nonContact = True
+            p.remove(j)
+    
+    for i,j in enumerate(contactName):
+        for u in j.contact:
+            if u.name == decodeExit:
+                print(f"found {u.name} in a Contact list. Removing...")
+                inContact = True
+                j.contact.remove(u)
+    
+    if nonContact == True or inContact == True:
+        isValid = "SUCCESS"
+        print("Removed success")
+        serverSocket.sendto(isValid.encode(), clientAddress)
+    
+    if nonContact == False and inContact == False:
+        isValid = "FAILURE"
+        print("Removed Failed...")
+        serverSocket.sendto(isValid.encode(), clientAddress)
+
+
+
 
 def se_save():
     saveName, clientAddress = serverSocket.recvfrom(2048)
@@ -132,41 +165,7 @@ def se_query():
         for cl in contactName:
             contactString += cl.name + " " + str(len(cl.contact)) + " "
             for contact in cl.contact:
-                contactString += contact.name + " " + contact.ipAdd + " " + str(contact.portNum) + " "
-        contactArray = contactString.split()
-
-        NumberOfContactLists = int(contactArray[0])
-        TotalPos = 1
-        for i in range(NumberOfContactLists):
-            MyContactListName = contactArray[TotalPos]
-            TotalPos += 1
-            MyContactListSize = int(contactArray[TotalPos])
-            TotalPos += 1
-            for x in range(MyContactListSize):
-                MyContactName = contactArray[TotalPos]
-                TotalPos += 1
-                MyContactIp = contactArray[TotalPos]
-                TotalPos += 1
-                MyContactPort = contactArray[TotalPos]
-                TotalPos += 1
-        contactArray = contactString.split()
-
-        NumberOfContactLists = int(contactArray[0])
-        TotalPos = 1
-        for i in range(NumberOfContactLists):
-            print("Contact List Name: " + contactArray[TotalPos] + " ")
-            TotalPos += 1
-            MyContactListSize = int(contactArray[TotalPos])
-            print("Total Number of contacts in list: " + str(MyContactListSize)+ "\n")
-            TotalPos += 1
-            for x in range(MyContactListSize):
-                print("Name: " + contactArray[TotalPos]+ " ")
-                TotalPos += 1
-                print("Ip: " +contactArray[TotalPos]+ " ")
-                TotalPos += 1
-                print("Port: " + contactArray[TotalPos]+ " ")
-                TotalPos += 1
-                print("\n")        
+                contactString += contact.name + " " + contact.ipAdd + " " + str(contact.portNum) + " "        
         #numOfContact = str(len(contactName))
        # str1 = " "
        # stringContact = str1.join(ContactList)
@@ -273,6 +272,8 @@ while True:
         se_join()
     elif(command == "4"):
         se_save()
+    elif(command == "5"):
+        se_exit()
     else:
         print("command error")
    
