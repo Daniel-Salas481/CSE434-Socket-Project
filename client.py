@@ -12,6 +12,19 @@ menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_opt
 
 
 # Create some items
+
+def op_save():
+    saveIn = input("save ")
+
+    
+    clientSocket.sendto("4".encode(), (serverName, serverPort))
+    clientSocket.sendto(saveIn.encode(), (serverName, serverPort))
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCom.decode())
+    exit()
+
+    
+
 def op_join():
     joinConList, joinConName = input("join ").rsplit(None, 1)
 
@@ -81,7 +94,7 @@ IMquery = FunctionItem("query-lists",  op_query)
 
 IMjoin = FunctionItem("join", op_join)
 
-IMsave = FunctionItem("save", input, ["Enter an input"])
+IMsave = FunctionItem("save", op_save)
 
 IMexit = FunctionItem("exit", input, ["Enter an input"])
 

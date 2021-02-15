@@ -25,6 +25,51 @@ class Contactinfo:
 p = [] 
 contactName = []
 
+def se_save():
+    saveName, clientAddress = serverSocket.recvfrom(2048)
+
+    decodeSave = saveName.decode()
+
+    outfile = open(decodeSave+".txt", 'w')
+
+    # A line containing the number of n of active users (or contacts)
+    TextFileData = str(len(p)) + "\n"
+
+    # For each of the n contacts
+    for contact in p:
+        # A line containing the contact-name, its ip address, and port number
+        TextFileData += contact.name + " " + contact.ipAdd + " " + contact.portNum + "\n"
+
+    # A line containing the number of l of contact lists
+    TextFileData += str(len(contactName)) + "\n"
+
+    # For each fo the l contact lists
+    for cl in contactName:
+        # A line containig the contact-list-name followed by the number k of contacts in the list
+        TextFileData += cl.name + " " + str(len(cl.contact)) + "\n"
+
+        # For each of the k contacts 
+        for contact in cl.contact:
+            # A line containing the contact-name, it's ip address and its port number 
+            TextFileData += contact.name + " " + contact.ipAdd + " " + str(contact.portNum) + "\n"
+   
+    # Debug Print
+    #print(TextFileData)
+    if not decodeSave:
+        print("Failed to create")
+        isValid = "FAILURE"
+        serverSocket.sendto(isValid.encode(), clientAddress)
+        outfile.close()
+    else:
+        print("File Created")
+        isValid = "SUCCESS"
+        outfile.write(TextFileData)
+        serverSocket.sendto(isValid.encode(), clientAddress)
+        outfile.close()
+    
+
+    
+
 def se_join():
     conList, clientAddress = serverSocket.recvfrom(2048)
     nameList, clientAddress = serverSocket.recvfrom(2048)
@@ -184,6 +229,7 @@ def se_register():
         print(f'contact-name: {decodeName}')
         print(f'IP-addres: {decodeIP}')
         print(f'port: {decodePort}')
+        print(f'active users: {len(p)}')
         print(f'Values are stored')
         sucess = "SUCCESS"
         serverSocket.sendto(sucess.encode(), clientAddress)
@@ -203,6 +249,7 @@ def se_register():
         print(f'contact-name: {decodeName}')
         print(f'IP-addres: {decodeIP}')
         print(f'port: {decodePort}')
+        print(f'active users: {len(p)}')
         print(f'Values are stored')
         sucess = "SUCCESS"
         serverSocket.sendto(sucess.encode(), clientAddress)
@@ -224,6 +271,8 @@ while True:
         se_query()
     elif(command == "3"):
         se_join()
+    elif(command == "4"):
+        se_save()
     else:
         print("command error")
    
