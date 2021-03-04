@@ -24,6 +24,14 @@ class Contactinfo:
 
 p = [] 
 contactName = []
+def se_imstart():
+    imName, clientAddress = serverSocket.recvfrom(2048)
+    imContact, clientAddress = serverSocket.recvfrom(2048)
+
+    decodeNam = imName.decode()
+    decodeCon = imContact.decode()
+    
+    
 def se_exit():
     exName, clientAddress = serverSocket.recvfrom(2048)
 
@@ -191,7 +199,7 @@ def se_create():
         sucess = "SUCCESS"
         serverSocket.sendto(sucess.encode(), clientAddress)
         conValid = False
-    
+    #perhaps???/
     if decodeContact in contactName:
         response = "FAILURE"
         serverSocket.sendto(response.encode(), clientAddress)
@@ -274,6 +282,8 @@ while True:
         se_save()
     elif(command == "5"):
         se_exit()
+    elif(command == "6"):
+        se_imstart()
     else:
         print("command error")
    

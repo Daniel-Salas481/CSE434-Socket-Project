@@ -13,7 +13,12 @@ menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_opt
 
 # Create some items
 
+def op_imstart():
+    imStartContact, imStartName = input("im-start ").rsplit(None, 1)
 
+    clientSocket.sendto("6".encode(), (serverName, serverPort))
+    clientSocket.sendto(imStartContact.encode(),(serverName, serverPort))
+    clientSocket.sendto(imStartName.encode(),(serverName, serverPort))
 
 def op_exit():
     exitIn = input("exit ")
@@ -92,7 +97,7 @@ def op_query():
     clientSocket.sendto("2".encode(), (serverName, serverPort))
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
-    cContact = input("..")
+    sContact = input("..") 
     exit()
 
 
@@ -109,6 +114,8 @@ IMjoin = FunctionItem("join", op_join)
 
 IMsave = FunctionItem("save", op_save)
 
+IMstart = FunctionItem("im-start", op_imstart)
+
 IMexit = FunctionItem("exit", op_exit)
 
 # Once we're done creating them, we just add the items to the menu
@@ -117,6 +124,7 @@ menu.append_item(IMcreate)
 menu.append_item(IMquery)
 menu.append_item(IMjoin)
 menu.append_item(IMsave)
+menu.append_item(IMstart)
 menu.append_item(IMexit)
 
 
