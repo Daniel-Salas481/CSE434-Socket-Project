@@ -196,8 +196,8 @@ def se_create():
         print("responding...")
         print(f'contact: {decodeContact}')
         print(f'Contact list is made')
-        sucess = "SUCCESS"
-        serverSocket.sendto(sucess.encode(), clientAddress)
+        success = "SUCCESS"
+        serverSocket.sendto(success.encode(), clientAddress)
         conValid = False
     #perhaps???/
     if decodeContact in contactName:
@@ -211,8 +211,8 @@ def se_create():
         print("responding...")
         print(f'contact: {decodeContact}')
         print(f'Contact list is made')
-        sucess = "SUCCESS"
-        serverSocket.sendto(sucess.encode(), clientAddress)
+        success = "SUCCESS"
+        serverSocket.sendto(success.encode(), clientAddress)
 
 
 
@@ -238,28 +238,28 @@ def se_register():
         print(f'port: {decodePort}')
         print(f'active users: {len(p)}')
         print(f'Values are stored')
-        sucess = "SUCCESS"
-        serverSocket.sendto(sucess.encode(), clientAddress)
+        success = "SUCCESS"
+        serverSocket.sendto(success.encode(), clientAddress)
     
 
 
 
     for obj in p:
         if obj.name == decodeName:
-            sucess = "FAILURE"
-            serverSocket.sendto(sucess.encode(), clientAddress)
+            success = "FAILURE"
+            serverSocket.sendto(success.encode(), clientAddress)
             regValid = False
     
     if(regValid == True):   
         p.append(Contactinfo(decodeName, decodeIP,decodePort))
         print("responding...")
         print(f'contact-name: {decodeName}')
-        print(f'IP-addres: {decodeIP}')
+        print(f'IP-address: {decodeIP}')
         print(f'port: {decodePort}')
         print(f'active users: {len(p)}')
         print(f'Values are stored')
-        sucess = "SUCCESS"
-        serverSocket.sendto(sucess.encode(), clientAddress)
+        success = "SUCCESS"
+        serverSocket.sendto(success.encode(), clientAddress)
 
 
 
