@@ -1,3 +1,5 @@
+from multiprocessing import Process
+
 from socket import *
 
 
@@ -24,12 +26,106 @@ class Contactinfo:
 
 p = [] 
 contactName = []
-def se_imstart():
-    imName, clientAddress = serverSocket.recvfrom(2048)
-    imContact, clientAddress = serverSocket.recvfrom(2048)
+messageHolder = ""
+#holding the name and contact to see if it equals
+nameHolder = ""
+contactHolder = "" 
 
-    decodeNam = imName.decode()
+def se_imcomplete():
+    imComCon, clientAddress = serverSocket.recvfrom(2048)
+    imNamCon, clientAddress = serverSocket.recvfrom(2048)
+
+    ComCon = imComCon.decode()
+    NamCon = imNamCon.decode()
+
+    print(f"I got {type(ComCon)}")
+    print(f"I got {type(contactHolder)}")
+    print(f"I got {type(NamCon)}")
+    print(f"I got {type(nameHolder)}")
+    if nameHolder == NamCon and contactHolder == ComCon:
+        #this section will send the typed  message to all the clients in the list
+        print("they match! YEEEEEEEEES SIR")
+    else:
+        print("They do not match, wtf!!!!!")
+
+def se_messageStore():
+    imStore, clientAddress = serverSocket.recvfrom(2048)
+
+    global messageHolder
+
+    messageHolder = imStore.decode()
+
+    print(f"MESSAGE: {messageHolder}")
+    print("Sending to message Holder")
+
+def se_imstart():
+    imContact, clientAddress = serverSocket.recvfrom(2048)
+    imName, clientAddress = serverSocket.recvfrom(2048)
+    
+    counter = 0
     decodeCon = imContact.decode()
+    decodeNam = imName.decode()
+    
+
+    contactValid = False
+    nameValid = False
+    contactString = str(len(contactName))
+
+    for cl in contactName:
+        if cl.name == decodeCon:
+            contactValid = True
+            print(f"Found contact list: {cl.name}")
+        else:
+            print("Not found")
+        
+    
+    if contactValid == True:
+        for i,j in enumerate(contactName):
+            
+            for u in j.contact:
+                
+                print(f"Loopin in {u.name}")
+                
+                if u.name == decodeNam:
+                    nameValid = True
+
+                    print(f"contact name: {u.name}")
+                    print(f"IP Address: {u.ipAdd}")
+                    print(f"portNumber: {u.portNum}")
+                    print(f"Moving it to top of the  list....")
+                    
+                    # moving up the selected contact list to the start index
+                    j.contact.insert(0, j.contact.pop())
+                else:
+                    print("Not this one..")
+               
+            for h in j.contact:
+                print(f" setting up {h.name}")
+                contactString += h.name + " " + h.ipAdd + " " + str(h.portNum) + " "
+
+    if contactValid == True and nameValid == True:
+        print(f"sending the contact list with {decodeNam} ")
+
+        global nameHolder
+        nameHolder = decodeNam
+
+        global contactHolder
+        contactHolder = decodeCon
+
+        #contactString = str(len(contactName)) + " "
+       # for cl in contactName: #Need to only show the list with name you input. not the others
+           # contactString += cl.name + " " + str(len(cl.contact)) + " "
+        
+        serverSocket.sendto(contactString.encode(), clientAddress)
+
+        serverSocket.sendto("0".encode(), clientAddress)        
+
+    else: 
+        fValid = "Failure: 0"
+        serverSocket.sendto(fValid.encode(), clientAddress)
+
+
+    #serverSocket.sendto(fValid.encode(), clientAddress)
     
     
 def se_exit():
@@ -284,6 +380,10 @@ while True:
         se_exit()
     elif(command == "6"):
         se_imstart()
+    elif(command == "7"):
+        se_imcomplete()
+    elif(command == "20"):
+        se_messageStore()
     else:
         print("command error")
    

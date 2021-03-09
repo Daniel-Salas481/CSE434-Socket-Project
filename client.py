@@ -13,12 +13,41 @@ menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_opt
 
 # Create some items
 
+
+
+def op_imcomplete():
+    imCompCon, imCompNam = input("im-complete ").rsplit(None, 1)
+
+    clientSocket.sendto("7".encode(), (serverName, serverPort))
+
+    clientSocket.sendto(imCompCon.encode(),(serverName, serverPort))
+    clientSocket.sendto(imCompNam.encode(),(serverName, serverPort))
+
+    
+    
+
 def op_imstart():
     imStartContact, imStartName = input("im-start ").rsplit(None, 1)
 
     clientSocket.sendto("6".encode(), (serverName, serverPort))
     clientSocket.sendto(imStartContact.encode(),(serverName, serverPort))
     clientSocket.sendto(imStartName.encode(),(serverName, serverPort))
+
+    messageCom, serverAddress = clientSocket.recvfrom(2048)
+    print(messageCom.decode())
+
+
+    cmd_encoded, clientAddress = clientSocket.recvfrom(2048)
+    command = cmd_encoded.decode()
+    if(command == "0"): #Now sending the message
+        imMessage = input("Type Your Message: ")     
+        #calling and sending message to server
+        print("Sending message to server! go to IM-complete to send it to your list!")
+        clientSocket.sendto("20".encode(), (serverName, serverPort)) 
+        clientSocket.sendto(imMessage.encode(),(serverName, serverPort))
+
+    exit()
+    
 
 def op_exit():
     exitIn = input("exit ")
@@ -28,6 +57,8 @@ def op_exit():
 
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
+
+    
     exit()
 
 
@@ -116,7 +147,11 @@ IMsave = FunctionItem("save", op_save)
 
 IMstart = FunctionItem("im-start", op_imstart)
 
+IMcomplete =  FunctionItem("im-complete", op_imcomplete)
+
 IMexit = FunctionItem("exit", op_exit)
+
+
 
 # Once we're done creating them, we just add the items to the menu
 menu.append_item(IMregister)
@@ -125,6 +160,7 @@ menu.append_item(IMquery)
 menu.append_item(IMjoin)
 menu.append_item(IMsave)
 menu.append_item(IMstart)
+menu.append_item(IMcomplete)
 menu.append_item(IMexit)
 
 
