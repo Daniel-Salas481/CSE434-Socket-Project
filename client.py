@@ -1,6 +1,7 @@
 from socket import *
 from consolemenu import *
 from consolemenu.items import *
+import time 
 import re
 
 serverName = '127.0.0.1'
@@ -8,22 +9,13 @@ serverName = '127.0.0.1'
 serverPort = 5050
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 # Create the menu
-menu = ConsoleMenu("IM messaging app", "Milestone Demo (CSE-434)", show_exit_option=False)
+menu = ConsoleMenu("IM messaging app", "Final Project (CSE-434)", show_exit_option=False)
 
 
 # Create some items
 
 
-
-def op_imcomplete():
-    imCompCon, imCompNam = input("im-complete ").rsplit(None, 1)
-
-    clientSocket.sendto("7".encode(), (serverName, serverPort))
-
-    clientSocket.sendto(imCompCon.encode(),(serverName, serverPort))
-    clientSocket.sendto(imCompNam.encode(),(serverName, serverPort))
-
-    
+backed = False
     
 
 def op_imstart():
@@ -39,14 +31,43 @@ def op_imstart():
 
     cmd_encoded, clientAddress = clientSocket.recvfrom(2048)
     command = cmd_encoded.decode()
-    if(command == "0"): #Now sending the message
-        imMessage = input("Type Your Message: ")     
-        #calling and sending message to server
-        print("Sending message to server! go to IM-complete to send it to your list!")
-        clientSocket.sendto("20".encode(), (serverName, serverPort)) 
-        clientSocket.sendto(imMessage.encode(),(serverName, serverPort))
 
-    exit()
+    i = True
+    while True:
+        if(command == "0"): #Now sending the message
+            imMessage = "Type Your Message:" 
+            inputStr = input(imMessage)  
+
+
+            #calling and sending message to server
+            clientSocket.sendto("8".encode(), (serverName, serverPort))
+            clientSocket.sendto(inputStr.encode(),(serverName, serverPort)) 
+            
+
+            #im-complete <contact-list-name> <contact-name>
+            clientSocket.sendto(imStartContact.encode(), (serverName, serverPort))
+            clientSocket.sendto(imStartName.encode(), (serverName, serverPort))
+
+            #Success or Failure indicated
+            #May have to exit somehow
+        cmd_code, serverAddress = clientSocket.recvfrom(2048)
+        command1 = cmd_code.decode()
+        if(command1 == "1"):
+            #recieved the message back from the server and now it outputs to everyone
+
+
+            #listen to the socket in the child process. 
+            contactCode, clientAddress = clientSocket.recvfrom(2048)
+            usernameCode, clientAddress = clientSocket.recvfrom(2048)
+            messageCode, clientAddress = clientSocket.recvfrom(2048)
+
+            contact = contactCode.decode()
+            username = usernameCode.decode()
+            message = messageCode.decode()
+
+            print(f"{username} said: [{message}]")
+
+
     
 
 def op_exit():
@@ -57,9 +78,9 @@ def op_exit():
 
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
-
-    
     exit()
+    
+
 
 
 def op_save():
@@ -84,6 +105,7 @@ def op_join():
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
     exit()
+ 
 
 def op_register():
     #register <contact-name> <IP-address> <port>.
@@ -108,10 +130,11 @@ def op_register():
      messageCom, serverAddress = clientSocket.recvfrom(2048)
      print(messageCom.decode())
      exit()
+     
     else:
      print('Invalid input. Please try again.')
-      #register = input("..")
-    exit()
+     exit()
+     
     
    
 def op_create():
@@ -123,13 +146,14 @@ def op_create():
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
     exit()
+    
 
 def op_query():
     clientSocket.sendto("2".encode(), (serverName, serverPort))
     messageCom, serverAddress = clientSocket.recvfrom(2048)
     print(messageCom.decode())
-    sContact = input("..") 
     exit()
+    
 
 
 
@@ -147,8 +171,6 @@ IMsave = FunctionItem("save", op_save)
 
 IMstart = FunctionItem("im-start", op_imstart)
 
-IMcomplete =  FunctionItem("im-complete", op_imcomplete)
-
 IMexit = FunctionItem("exit", op_exit)
 
 
@@ -160,17 +182,8 @@ menu.append_item(IMquery)
 menu.append_item(IMjoin)
 menu.append_item(IMsave)
 menu.append_item(IMstart)
-menu.append_item(IMcomplete)
 menu.append_item(IMexit)
 
 
 # Finally, we call show to show the menu and allow the user to interact
 menu.show()
-
-
-
-#message = input('Input lowercase Sentence:')
-#clientSocket.sendto(message.encode(),(serverName, serverPort))
-#modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
-#print(modifiedMessage.decode())
-#clientSocket.close()

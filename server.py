@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, current_process, Queue
 
 from socket import *
 
@@ -31,32 +31,66 @@ messageHolder = ""
 nameHolder = ""
 contactHolder = "" 
 
-def se_imcomplete():
-    imComCon, clientAddress = serverSocket.recvfrom(2048)
-    imNamCon, clientAddress = serverSocket.recvfrom(2048)
+#def se_imcomplete():
 
-    ComCon = imComCon.decode()
-    NamCon = imNamCon.decode()
+ #   imComCon, clientAddress = serverSocket.recvfrom(2048)
+  #  imNamCon, clientAddress = serverSocket.recvfrom(2048)
 
-    print(f"I got {type(ComCon)}")
-    print(f"I got {type(contactHolder)}")
-    print(f"I got {type(NamCon)}")
-    print(f"I got {type(nameHolder)}")
-    if nameHolder == NamCon and contactHolder == ComCon:
-        #this section will send the typed  message to all the clients in the list
-        print("they match! YEEEEEEEEES SIR")
-    else:
-        print("They do not match, wtf!!!!!")
 
-def se_messageStore():
+def se_messageStore(nam , com, mes):
+
+    
+    #imComCon, clientAddress = serverSocket.recvfrom(2048)
+    #imNamCon, clientAddress = serverSocket.recvfrom(2048)
+
+    #imNam = imNamCon.decode()
+    #imCom = imComCon.decode()
+
+    username = nam
+    contact = com 
+    message = mes
+    
+    print(f"___________________")
+    print(f"{username}: {message} ")
+    print(f"___________________")
+
+    serverSocket.sendto("1".encode(), clientAddress)
+    serverSocket.sendto(contact.encode(), clientAddress)
+    serverSocket.sendto(username.encode(), clientAddress)
+    serverSocket.sendto(message.encode(), clientAddress)
+
+    
+
+#what is going to do multiple work
+def se_multiProcess():
+    if __name__ == "__main__":
+        queue = Queue()
+    
     imStore, clientAddress = serverSocket.recvfrom(2048)
 
     global messageHolder
 
     messageHolder = imStore.decode()
 
-    print(f"MESSAGE: {messageHolder}")
-    print("Sending to message Holder")
+    multiCom, clientAddress = serverSocket.recvfrom(2048)
+    multiNam, clientAddress = serverSocket.recvfrom(2048)
+  
+
+    Nam = multiNam.decode()
+    Com = multiCom.decode()
+
+
+    processes = [Process(target=se_messageStore, args=(Nam, Com, messageHolder))]
+
+    for p in processes:
+        p.start() #we start here
+        
+    for p in processes:
+        p.join() #use the join in order to stop execution of current program
+
+         
+
+
 
 def se_imstart():
     imContact, clientAddress = serverSocket.recvfrom(2048)
@@ -69,7 +103,7 @@ def se_imstart():
 
     contactValid = False
     nameValid = False
-    contactString = str(len(contactName))
+    contactString = str(len(contactName))#list of name in
 
     for cl in contactName:
         if cl.name == decodeCon:
@@ -99,7 +133,7 @@ def se_imstart():
                 else:
                     print("Not this one..")
                
-            for h in j.contact:
+            for h in j.contact:#here
                 print(f" setting up {h.name}")
                 contactString += h.name + " " + h.ipAdd + " " + str(h.portNum) + " "
 
@@ -380,10 +414,8 @@ while True:
         se_exit()
     elif(command == "6"):
         se_imstart()
-    elif(command == "7"):
-        se_imcomplete()
-    elif(command == "20"):
-        se_messageStore()
+    elif(command == "8"):
+        se_multiProcess()
     else:
         print("command error")
    
